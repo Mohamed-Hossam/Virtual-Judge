@@ -91,6 +91,153 @@
 			return false;
 		}
 		
+		public function get_problems($fillter,$offset=-1)
+		{
+			$query="SELECT * FROM problem ";
+			if(isset($fillter["cat"]))
+			{
+				if($fillter["cat"]!="All")
+				{
+					$query.=" join problem_category on problem.problem_id=problem_category.problem_id where 1 ";
+					$b=urlencode($fillter["cat"]);
+					$str=$fillter['cat'];
+					$change = array(' '=>'%',);
+					$s=strtr(mysqli_real_escape_string($this->db,$str),$change);
+					$query .= "AND category_name LIKE '%".$s."%'";
+				}
+				else 
+					$query.=" WHERE 1 ";
+			}
+			else 
+					$query.=" WHERE 1 ";
+		
+			if(isset($fillter["Fproblrm"]))
+			{
+					$temp=$fillter["Fproblrm"];
+					if(strpos($fillter["Fproblrm"], '-') !== false)
+					{
+						$temp=substr($fillter["Fproblrm"],strpos($fillter["Fproblrm"], '-')+1,1000);
+						if(strpos($temp, '-') !== false)
+						{
+							$temp=substr($temp,strpos($temp, '-')+1,1000);
+						}
+					}
+					$b=urlencode($fillter["Fproblrm"]);
+					$str=$temp;
+					$change = array(' '=>'%',);
+					$s=strtr(mysqli_real_escape_string($this->db,$str),$change);
+					$query .= " AND name LIKE '%".$s."%'";
+					
+			}
+			if(isset($fillter["Fsource"]))
+			{
+					$b=urlencode($fillter["Fsource"]);
+					$str=$fillter['Fsource'];
+					$change = array(' '=>'%',);
+					$s=strtr(mysqli_real_escape_string($this->db,$str),$change);
+					$query .= " AND source LIKE '%".$s."%'";
+					
+			}
+			
+			if(isset($fillter["OJ"]))
+			{
+				if($fillter["OJ"]!="All")
+				{
+					$query.=" AND from_oj='{$fillter["OJ"]}' ";
+				}
+			}
+			if($offset!=-1)$query .=" ORDER BY problem.problem_id DESC LIMIT 50 OFFSET {$offset} ";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db));	
+			}
+			return $result;
+		}
+		public function get_status($fillter,$offset=-1)
+		{
+			$query="SELECT * FROM submission join problem 
+			ON problem.problem_id=submission.problem_id WHERE 1 ";
+			if(isset($fillter["lang"]))
+			{
+				if($fillter["lang"]!="All"){
+					$query.=" AND Language='{$fillter["lang"]}'";
+				}
+			}
+			if(isset($fillter["verdict"]))
+			{
+				if($fillter["verdict"]!="All")
+				$query.=" AND Verdict='{$fillter["verdict"]}'";
+			}
+			if(isset($_GET["Fproblrm"]))
+			{
+				$temp=$fillter["Fproblrm"];
+				if(strpos($fillter["Fproblrm"], '-') !== false)
+				{
+					$temp=substr($fillter["Fproblrm"],strpos($fillter["Fproblrm"], '-')+1,1000);
+					if(strpos($temp, '-') !== false)
+					{
+						$temp=substr($temp,strpos($temp, '-')+1,1000);
+					}
+				}
+				$str=$temp;
+				$change = array(' '=>'%',);
+				$s=strtr(mysqli_real_escape_string($this->db,$str),$change);
+				$query .= " AND name LIKE '%".$s."%'";
+			}
+			if(isset($fillter["Fuser"]))
+			{
+					$str=$_GET['Fuser'];
+					$change = array(' '=>'%',);
+					$s=strtr(mysqli_real_escape_string($this->db,$str),$change);
+					$query .= " AND user_Handle LIKE '%".$s."%'";
+			}
+			
+			if($offset!=-1)$query .=" ORDER BY submission_id DESC LIMIT 20 OFFSET {$offset} ";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db));	
+			}
+			return $result;
+		}
+		
+		public function get_category()
+		{
+			$Q="CREATE OR REPLACE VIEW  CAT AS SELECT category_name,count(category_name) AS NUM FROM problem_category 
+					GROUP BY category_name";
+			$res=mysqli_query($this->db,$Q);	
+			if(!$res)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			$query="SELECT * FROM CAT ORDER BY NUM DESC";
+			$res=mysqli_query($this->db,$query);
+			if(!$res)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			return $res;
+		}
+		
+		
+		
+		public function count_accepted_submission($problem_id)
+		{
+			$query="SELECT COUNT(submission_id) FROM submission WHERE Verdict='Accepted' AND Problem_id={$problem_id}";
+			$res=mysqli_query($this->db,$query);
+			$r=mysqli_fetch_array($res);
+			return $r[0];
+		}
+		
+		public function count_all_submission($problem_id)
+		{
+			$query="SELECT COUNT(submission_id) FROM submission WHERE Problem_id={$problem_id}";
+			$res=mysqli_query($this->db,$query);
+			$r=mysqli_fetch_array($res);
+			return $r[0];
+		}
+		
 		
 		public function close_connection()
 		{
