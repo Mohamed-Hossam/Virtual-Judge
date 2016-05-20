@@ -239,6 +239,28 @@
 		}
 		
 		
+		public function get_problem($problem_id)
+		{
+			$query="SELECT * FROM problem WHERE problem_id={$problem_id}";
+			$result=mysqli_query($this->db,$query);
+			return $result;
+		}
+		
+		public function get_problem_category($problem_id)
+		{
+			$query="SELECT * FROM problem_category WHERE problem_id={$problem_id}";
+			$result=mysqli_query($this->db,$query);
+			return $result;
+		}
+		
+		public function get_max_problem_id()
+		{
+			$query="SELECT MAX(problem_id) FROM problem";
+			$res=mysqli_query($this->db,$query);
+			$r=mysqli_fetch_array($res);
+			return $r[0];
+		}
+		
 		public function close_connection()
 		{
 			if(isset($this->db))
