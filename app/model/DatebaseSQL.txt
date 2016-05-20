@@ -1,0 +1,188 @@
+USE _OJ;
+DROP DATABASE _OJ;
+CREATE DATABASE _OJ;
+
+USE OJ;
+
+CREATE TABLE user(
+Handle 				VARCHAR(50) NOT NULL,
+Fname 				VARCHAR(50) NOT NULL,
+Lname 				VARCHAR(50) NOT NULL,
+Hahsed_password 		TEXT NOT NULL,
+Email  				VARCHAR(100) NOT NULL,
+Type   				VARCHAR(20) NOT NULL,
+Register_Date 			VARCHAR(50) NOT NULL,
+School				VARCHAR(50) NOT NULL,
+PRIMARY KEY(Handle)
+);
+
+
+CREATE TABLE problem(
+problem_id 			INT(11) NOT NULL AUTO_INCREMENT,
+difficulty 			INT(2) NOT NULL,
+name 				TEXT NOT NULL,
+time_limit 			TEXT NOT NULL,
+memory_limit  			TEXT NOT NULL,
+from_oj 			VARCHAR(20) NOT NULL,
+description 			LONGTEXT  NOT NULL,
+input 				LONGTEXT  NOT NULL,
+output 				LONGTEXT  NOT NULL,
+notes 				LONGTEXT  NOT NULL,
+input_type 			VARCHAR(20) NOT NULL,
+output_type 			VARCHAR(20) NOT NULL,
+id                              VARCHAR(20) NOT NULL,
+contest_id                      VARCHAR(20) NOT NULL,
+ind                             VARCHAR(20) NOT NULL,
+link                            TEXT NOT NULL,
+source				TEXT NOT NULL,
+solved_count			INT(20) NULL,
+sample_input			TEXT NOT NULL,
+sample_output			TEXT NOT NULL,
+PRIMARY KEY(problem_id)
+);
+
+
+CREATE TABLE submission(
+submission_id 			INT(11) NOT NULL AUTO_INCREMENT,
+TIME 				INT(11) NOT NULL,
+Verdict 			TEXT NOT NULL,
+Soultion 			LONGTEXT  NOT NULL,
+Language  			VARCHAR(60) NOT NULL,
+submission_date 		INT(50) NOT NULL,
+memory   			INT(11) NOT NULL,
+user_Handle   			VARCHAR(50) NULL,
+Problem_id 			INT(11) NOT NULL,
+PRIMARY KEY(submission_id),
+FOREIGN KEY (user_Handle) REFERENCES user(Handle) ON DELETE CASCADE,
+FOREIGN KEY (Problem_id) REFERENCES problem(problem_id) ON DELETE CASCADE
+);
+
+
+
+
+
+CREATE TABLE contest(
+contest_id 			INT(11) NOT NULL AUTO_INCREMENT,
+start 				INT(50) NOT NULL,
+end   				INT(50) NOT NULL,
+name 				VARCHAR(50) NOT NULL,
+creator_Handle   		VARCHAR(50) NOT NULL,
+type		   		VARCHAR(50) NOT NULL,
+PRIMARY KEY(contest_id),
+FOREIGN KEY (creator_Handle) REFERENCES user(Handle) ON DELETE CASCADE
+);
+
+
+CREATE TABLE team(
+team_name 			VARCHAR(50) NOT NULL,
+PRIMARY KEY(team_name)
+);
+
+CREATE TABLE member_in(
+team_name 			VARCHAR(50) NOT NULL,
+user_Handle 			VARCHAR(50) NOT NULL,
+PRIMARY KEY(team_name,user_Handle),
+FOREIGN KEY (user_Handle) REFERENCES user(Handle) ON DELETE CASCADE,
+FOREIGN KEY (team_name) REFERENCES team(team_name) ON DELETE CASCADE
+);
+
+
+CREATE TABLE problem_category(
+problem_id 			INT(11) NOT NULL,
+category_name 			VARCHAR(50) NOT NULL,
+PRIMARY KEY(problem_id,category_name),
+FOREIGN KEY (problem_id) REFERENCES problem(problem_id) ON DELETE CASCADE
+);
+
+
+CREATE TABLE participate(
+contest_id 			INT(11) 	NOT NULL,
+participate_name		VARCHAR(50) 	NOT NULL,
+type	 			VARCHAR(50) 	NOT NULL,
+time				INT(50)		NOT NULL,
+PRIMARY KEY(contest_id,participate_name),
+FOREIGN KEY (contest_id) REFERENCES contest(contest_id) ON DELETE CASCADE
+);
+
+CREATE TABLE contest_invite(
+contest_id 			INT(11) 	NOT NULL,
+name				VARCHAR(50) 	NOT NULL,
+type	 			INT(1) 		NOT NULL,
+PRIMARY KEY(contest_id,name,type),
+FOREIGN KEY (contest_id) REFERENCES contest(contest_id) ON DELETE CASCADE
+);
+
+
+
+CREATE TABLE used_in(
+order_id			INT(11) NOT NULL AUTO_INCREMENT,
+contest_id 			INT(11) NOT NULL,
+problem_id 			INT(11) NOT NULL,
+PRIMARY KEY(order_id),
+FOREIGN KEY (contest_id) REFERENCES contest(contest_id) ON DELETE CASCADE,
+FOREIGN KEY (problem_id) REFERENCES problem(problem_id) ON DELETE CASCADE
+);
+
+CREATE TABLE mail(
+mail_id 			INT(11)     NOT NULL AUTO_INCREMENT,
+sender_handle 			VARCHAR(50) NOT NULL REFERENCES user(Handle),
+reciver_handle 			VARCHAR(50) NOT NULL REFERENCES user(Handle),
+date 				VARCHAR(50) NOT NULL,
+content 			TEXT 	    NOT NULL,
+title 				VARCHAR(50) NOT NULL,
+type				VARCHAR(50) NULL,
+PRIMARY KEY(mail_id),
+FOREIGN KEY (sender_handle) REFERENCES user(Handle) ON DELETE CASCADE,
+FOREIGN KEY (reciver_handle) REFERENCES user(Handle) ON DELETE CASCADE
+);
+
+
+
+
+
+
+CREATE TABLE blog(
+blog_id 			INT(11) NOT NULL AUTO_INCREMENT,
+title 				VARCHAR(100) NOT NULL,
+about 				VARCHAR(200) NOT NULL,
+date 				VARCHAR(50) NOT NULL,
+content 			LONGTEXT NOT NULL,
+writer_Handle   		VARCHAR(50) NOT NULL,
+PRIMARY KEY(blog_id),
+FOREIGN KEY (writer_Handle) REFERENCES user(Handle) ON DELETE CASCADE
+);
+
+CREATE TABLE blog_tag(
+tag_id 				INT(11) NOT NULL AUTO_INCREMENT,
+blog_id 			INT(11) NOT NULL ,
+tag_name			VARCHAR(20) NOT NULL,
+PRIMARY KEY(tag_id),
+FOREIGN KEY (blog_id ) REFERENCES blog(blog_id) ON DELETE CASCADE
+);
+
+CREATE TABLE comment(
+comment_id 			INT(11) NOT NULL AUTO_INCREMENT,
+date 				VARCHAR(50) NOT NULL,
+content 			TEXT NOT NULL,
+writer_Handle   		VARCHAR(50) NOT NULL,
+blog_id 			INT(11) NOT NULL,
+PRIMARY KEY(comment_id),
+FOREIGN KEY (writer_Handle) REFERENCES user(Handle) ON DELETE CASCADE,
+FOREIGN KEY (blog_id ) REFERENCES blog(blog_id) ON DELETE CASCADE
+);
+
+CREATE TABLE comment_reply(
+reply_id			INT(11) NOT NULL AUTO_INCREMENT,
+comment_id 			INT(11) NOT NULL,
+date 				VARCHAR(50) NOT NULL,
+content 			TEXT NOT NULL,
+writer_Handle   		VARCHAR(50) NOT NULL,
+PRIMARY KEY(reply_id),
+FOREIGN KEY (writer_Handle) REFERENCES user(Handle) ON DELETE CASCADE,
+FOREIGN KEY (comment_id ) REFERENCES comment(comment_id) ON DELETE CASCADE
+);
+
+
+
+
+
