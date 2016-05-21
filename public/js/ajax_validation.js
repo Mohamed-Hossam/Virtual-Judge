@@ -164,3 +164,44 @@ function reply_validation()
 		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		hr.send(v);
 }
+
+function submit_validation()
+{
+	var solution = editor.getValue();
+	var lang = document.forms['SForm']['lang'].value;
+	var id = document.forms['SForm']['id'].value;
+	var CID = document.forms['SForm']['CID'].value;
+	var IID = document.forms['SForm']['IID'].value;
+	var oj = document.forms['SForm']['oj'].value;
+	
+	
+	document.getElementById("SBUT").disabled = true;
+	
+		document.getElementById("mes").innerHTML='<img src="http://localhost/our3/public/img/loader.gif" width="45" height="45"/> Loading...';
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				alert(result);
+			
+				result=JSON.parse(result);
+				
+				document.getElementById("mes").innerHTML ="<h4 style='color:red;'>" +result['solution']+"</h4>";
+			
+				
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['SForm'].submit();
+				}
+				document.getElementById("SBUT").disabled = false;
+			}
+		};
+		var v = "solution="+encodeURIComponent(solution)+"&"+"lang="+encodeURIComponent(lang)+"&"+"id="+id+"&"+"CID="+CID+"&"+"IID="+IID+"&"+"oj="+oj;
+		
+
+		hr.open("POST", "../controller/submitController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
