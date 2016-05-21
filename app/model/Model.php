@@ -326,6 +326,142 @@
 			}
 		}
 		
+		public function get_blogs($fillter,$offset=-1)
+		{
+			$query="SELECT * FROM blog WHERE 1";
+			if(isset($fillter['search']))
+			{
+				$str=$fillter['search'];
+				$change = array(' '=>'%',);
+				$s=strtr(mysqli_real_escape_string($this->db,$str),$change);
+				$query .= " AND (title LIKE '%".$s."%' OR blog.blog_id IN (SELECT blog_tag.blog_id from blog_tag where tag_name LIKE '%".$s."%') )"  ;
+			}
+			
+			if($offset!=-1)$query .=" ORDER BY blog_id DESC LIMIT 10 OFFSET {$offset} ";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db));	
+			}
+			return $result;
+		}
+		
+		public function get_blog($bid)
+		{
+			$query="SELECT * FROM blog WHERE blog_id={$bid}";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+				
+			}
+			else
+			{
+				$row=mysqli_fetch_assoc($result);
+				$ar=mysqli_num_rows($result);
+				if($ar==0){
+					redirect("http://localhost/our3/app/view/blogs.php");
+				}
+				return $row;
+			}
+		}
+		
+		public function get_comment($bid)
+		{
+			$query="SELECT * FROM comment WHERE blog_id={$bid}";
+			$c=mysqli_query($this->db,$query);
+			if(!$c)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			return $c;
+		}
+		
+		public function get_reply($cid)
+		{
+			$q="SELECT * FROM comment_reply WHERE comment_id={$cid} ORDER BY reply_id ASC";
+			$re=mysqli_query($this->db,$q);
+			if(!$re)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			return $re;
+		}
+		
+		public function get_blog_tags($bid)
+		{
+			$query="SELECT * from blog_tag WHERE blog_id={$bid}";
+			$t=mysqli_query($this->db,$query);
+			if(!$t)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			return $t;
+		}
+		
+		public function insert_comment($data)
+		{
+			$date = date('M d, y')." at ".date('h:ia');
+			$data["comment"]=nl2br($data["comment"]);
+			$data["comment"]=mysqli_real_escape_string($this->db,$data["comment"]);
+			$query="INSERT INTO comment";
+			$query.="(date,content,writer_Handle,blog_id) ";
+			$query.="VALUES('{$date}','{$data["comment"]}','{$_COOKIE["user_handle"]}',{$data["id"]})";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db));	
+			}
+			return mysqli_insert_id($this->db);
+		}
+		
+		public function insert_replay($data)
+		{
+			$date = date('M d, y')." at ".date('h:ia');
+			$data["reply"]=nl2br($data["reply"]);
+			$data["reply"]=mysqli_real_escape_string($this->db,$data["reply"]);
+			$query="INSERT INTO comment_reply";
+			$query.="(date,content,writer_Handle,comment_id) ";
+			$query.="VALUES('{$date}','{$data["reply"]}','{$_COOKIE["user_handle"]}',{$data['comment_id']})";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db));	
+			}
+		}
+		
+		public function delete_blog($bid)
+		{
+			$query="SELECT * FROM blog WHERE blog_id={$bid}";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+				
+			}
+			else
+			{
+				if(mysqli_num_rows($result)==0)
+					redirect("http://localhost/our3/index.php");
+				$row=mysqli_fetch_assoc($result);
+				if($row['writer_Handle']!=$_COOKIE['user_handle'])
+					redirect("http://localhost/our3/index.php");
+				$query="Delete FROM blog WHERE blog_id={$bid}";
+				$result=mysqli_query($this->db,$query);
+				if(!$result)
+				{
+					die("query failed "." ".mysqli_error($this->db)); 
+					
+				}
+				redirect("http://localhost/our3/app/view/blogs.php");
+			}
+		}
+		
+		public function real_escape($str)
+		{
+			return mysqli_real_escape_string($this->db,$str);
+		}
+		
 		public function close_connection()
 		{
 			if(isset($this->db))
