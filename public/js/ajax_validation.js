@@ -66,3 +66,39 @@ function login_validation()
 		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		hr.send(v);
 }
+
+function blog_validation()
+{
+	var blog_title = document.forms['form']['blog_title'].value;
+	var txtEditor = document.forms['form']['txtEditorContent'].value;
+	var tags = document.forms['form']['tags'].value;
+	var blog_about = document.forms['form']['blog_about'].value;
+	var edit = document.forms['form']['edit'].value;
+	
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				
+				result=JSON.parse(result);
+				
+				document.getElementById("v_blog_title").innerHTML =result['blog_title'];
+				document.getElementById("v_blog_about").innerHTML =result['blog_about'];
+				document.getElementById("v_txtEditor").innerHTML =result['txtEditor'];
+				document.getElementById("v_tags").innerHTML =result['tags'];
+				
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "blog_title="+encodeURIComponent(blog_title)+"&"+"blog_about="+encodeURIComponent(blog_about)+"&"+"txtEditor="+encodeURIComponent(txtEditor)+"&"+"tags="+encodeURIComponent(tags)+"&"+"edit="+edit;
+		
+		hr.open("POST", "../controller/postController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
