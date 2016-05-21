@@ -261,6 +261,71 @@
 			return $r[0];
 		}
 		
+		public function insert_blog($data,$TAG)
+		{
+			$date = date('M d, y')." at ".date('h:ia');
+			$data["txtEditor"]=mysqli_real_escape_string($this->db,$data["txtEditor"]);
+			$data["blog_title"]=mysqli_real_escape_string($this->db,$data["blog_title"]);
+			$data["blog_about"]=mysqli_real_escape_string($this->db,$data["blog_about"]);
+			$query="INSERT INTO blog";
+			$query.="(title,about,date,content,writer_Handle) ";
+			$query.="VALUES('{$data["blog_title"]}','{$data["blog_about"]}','{$date}','{$data["txtEditor"]}','{$_COOKIE["user_handle"]}')";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			$last_id = mysqli_insert_id($this->db);
+			for($i=0;$i<count($TAG);$i++)
+			{
+				$query="INSERT INTO blog_tag";
+				$query.="(blog_id,tag_name) ";
+				$query.="VALUES('{$last_id}','{$TAG[$i]}')";
+				$result=mysqli_query($this->db,$query);
+				if(!$result)
+				{
+					die("query failed "." ".mysqli_error($this->db)); 
+				}
+			}
+		}
+		public function update_blog($data,$TAG)
+		{
+			$query="SELECT writer_Handle FROM blog WHERE blog_id='{$data['edit']}'";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			if($_COOKIE['user_handle']!=mysqli_fetch_row($result)[0])
+			{$ret['statue']='NOT';echo json_encode($ret);exit;}
+			$data["txtEditor"]=mysqli_real_escape_string($this->db,$data["txtEditor"]);
+			$data["blog_title"]=mysqli_real_escape_string($this->db,$data["blog_title"]);
+			$query="UPDATE  blog ";
+			$query.="SET title='{$data["blog_title"]}',about='{$data["blog_about"]}',content='{$data["txtEditor"]}' WHERE blog_id={$data['edit']}";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			$query="DELETE FROM blog_tag WHERE blog_id={$data['edit']}";
+			$result=mysqli_query($this->db,$query);
+			if(!$result)
+			{
+				die("query failed "." ".mysqli_error($this->db)); 
+			}
+			for($i=0;$i<count($TAG);$i++)
+			{
+				$query="INSERT INTO blog_tag";
+				$query.="(blog_id,tag_name) ";
+				$query.="VALUES('{$data['edit']}','{$TAG[$i]}')";
+				$result=mysqli_query($this->db,$query);
+				if(!$result)
+				{
+					die("query failed "." ".mysqli_error($this->db)); 
+				}
+			}
+		}
+		
 		public function close_connection()
 		{
 			if(isset($this->db))
