@@ -15,6 +15,8 @@ function register_validation()
 			if(hr.readyState == 4 && hr.status == 200) 
 			{		
 				result = hr.responseText;
+				//alert(result);
+				//exit;
 				result=JSON.parse(result);
 				
 				document.getElementById("v_handle").innerHTML = result['handle'];
@@ -66,7 +68,210 @@ function login_validation()
 		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		hr.send(v);
 }
+function submit_validation()
+{
+	var solution = editor.getValue();
+	var lang = document.forms['SForm']['lang'].value;
+	var id = document.forms['SForm']['id'].value;
+	var CID = document.forms['SForm']['CID'].value;
+	var IID = document.forms['SForm']['IID'].value;
+	var oj = document.forms['SForm']['oj'].value;
+	
+	
+	document.getElementById("SBUT").disabled = true;
+	
+		document.getElementById("mes").innerHTML='<img src="http://localhost/our3/public/img/loader.gif" width="45" height="45"/> Loading...';
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				alert(result);
+			
+				result=JSON.parse(result);
+				
+				document.getElementById("mes").innerHTML ="<h4 style='color:red;'>" +result['solution']+"</h4>";
+			
+				
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['SForm'].submit();
+				}
+				document.getElementById("SBUT").disabled = false;
+			}
+		};
+		var v = "solution="+encodeURIComponent(solution)+"&"+"lang="+encodeURIComponent(lang)+"&"+"id="+id+"&"+"CID="+CID+"&"+"IID="+IID+"&"+"oj="+oj;
+		
 
+		hr.open("POST", "../controller/submitController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
+
+function add_contest_validation()
+{
+	var contest_name = document.forms['form']['contest_name'].value;
+	var date = document.forms['form']['date'].value;
+	var hour = document.forms['form']['hour'].value;
+	var min = document.forms['form']['min'].value;
+	var Edate = document.forms['form']['Edate'].value;
+	var Ehour = document.forms['form']['Ehour'].value;
+	var Emin = document.forms['form']['Emin'].value;
+	var type = document.forms['form']['type'].value;
+	
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				result=JSON.parse(result);
+				
+				document.getElementById("v_contest_name").innerHTML=result['contest_name'];
+				document.getElementById("v_start").innerHTML=result['start'];
+				document.getElementById("v_end").innerHTML=result['end'];
+											
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "contest_name="+encodeURIComponent(contest_name)+"&"+"date="+date+"&"+"hour="+hour+"&"+"min="+min+"&"+"Edate="+Edate+"&"+"Ehour="+Ehour+"&"+"Emin="+Emin+"&"+"type="+type;
+	
+		hr.open("POST", "../controller/addcontestController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
+
+function add_problem_validation()
+{
+		var	id	      		= document.forms['form']['id'].value;
+		var mode      		= document.forms['form']['mode'].value;
+		var level     		= document.forms['form']['level'].value;
+		var operation 		= document.forms['form']['operation'].value;
+		var regional  		= document.forms['form']['regional'].value;
+		var world     		= document.forms['form']['world'].value;
+		var problem_search  = document.forms['form']['problem_search'].value;
+		var problem_num  	= document.forms['form']['problem_num'].value;
+		
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				result=JSON.parse(result);
+				
+				document.getElementById("error").innerHTML=result['error'];
+											
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "problem_search="+encodeURIComponent(problem_search)+'&'+"id="+id;
+		v+='&'+"mode="+mode+'&'+"level="+level+'&'+"operation="+operation+'&'+"regional="+regional+'&'+"world="+world+'&'+"problem_num="+problem_num;
+	
+		hr.open("POST", "../controller/addcontestproblemController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
+function invite_contest_validation()
+{
+	var name = document.forms['form']['name'].value;
+	var	id	 = document.forms['form']['id'].value;
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				result=JSON.parse(result);
+				
+				document.getElementById("v_name").innerHTML=result['name'];
+											
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "name="+encodeURIComponent(name)+'&'+"id="+id;
+	
+		hr.open("POST", "../controller/inviteController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
+
+function edit_contest_validation()
+{
+	var contest_name = document.forms['form']['contest_name'].value;
+	var date = document.forms['form']['date'].value;
+	var hour = document.forms['form']['hour'].value;
+	var min = document.forms['form']['min'].value;
+	var Edate = document.forms['form']['Edate'].value;
+	var Ehour = document.forms['form']['Ehour'].value;
+	var Emin = document.forms['form']['Emin'].value;
+	var type = document.forms['form']['type'].value;
+	var	id	 = document.forms['form']['id'].value;
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				result=JSON.parse(result);
+				
+				document.getElementById("v_contest_name").innerHTML=result['contest_name'];
+				document.getElementById("v_start").innerHTML=result['start'];
+				document.getElementById("v_end").innerHTML=result['end'];
+											
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "contest_name="+encodeURIComponent(contest_name)+"&"+"date="+date+"&"+"hour="+hour+"&"+"min="+min+"&"+"Edate="+Edate+"&"+"Ehour="+Ehour+"&"+"Emin="+Emin+"&"+"type="+type+"&"+"id="+id;
+	
+		hr.open("POST", "../controller/editcontestController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
+function register_team_validation()
+{
+		var team_name = document.forms['form']['team_name'].value;
+		var	id	 = document.forms['form']['id'].value;
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				result=JSON.parse(result);
+				
+				document.getElementById("v_team_name").innerHTML=result['team_name'];
+											
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "team_name="+encodeURIComponent(team_name)+'&'+"id="+id;
+	
+		hr.open("POST", "../controller/registerteamController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
 function blog_validation()
 {
 	var blog_title = document.forms['form']['blog_title'].value;
@@ -161,147 +366,6 @@ function reply_validation()
 		var v = "reply="+encodeURIComponent(reply)+"&"+"comment_id="+encodeURIComponent(comment_id);
 		
 		hr.open("POST", "../controller/replayController.php", true);
-		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		hr.send(v);
-}
-
-function submit_validation()
-{
-	var solution = editor.getValue();
-	var lang = document.forms['SForm']['lang'].value;
-	var id = document.forms['SForm']['id'].value;
-	var CID = document.forms['SForm']['CID'].value;
-	var IID = document.forms['SForm']['IID'].value;
-	var oj = document.forms['SForm']['oj'].value;
-	
-	
-	document.getElementById("SBUT").disabled = true;
-	
-		document.getElementById("mes").innerHTML='<img src="http://localhost/our3/public/img/loader.gif" width="45" height="45"/> Loading...';
-		var hr = new XMLHttpRequest();
-		hr.onreadystatechange = function() 
-		{
-			if(hr.readyState == 4 && hr.status == 200) 
-			{		
-				result = hr.responseText;
-				alert(result);
-			
-				result=JSON.parse(result);
-				
-				document.getElementById("mes").innerHTML ="<h4 style='color:red;'>" +result['solution']+"</h4>";
-			
-				
-				if(result["statue"].indexOf('OK')!=-1)
-				{
-					document.forms['SForm'].submit();
-				}
-				document.getElementById("SBUT").disabled = false;
-			}
-		};
-		var v = "solution="+encodeURIComponent(solution)+"&"+"lang="+encodeURIComponent(lang)+"&"+"id="+id+"&"+"CID="+CID+"&"+"IID="+IID+"&"+"oj="+oj;
-		
-
-		hr.open("POST", "../controller/submitController.php", true);
-		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		hr.send(v);
-}
-function add_contest_validation()
-{
-	var contest_name = document.forms['form']['contest_name'].value;
-	var date = document.forms['form']['date'].value;
-	var hour = document.forms['form']['hour'].value;
-	var min = document.forms['form']['min'].value;
-	var Edate = document.forms['form']['Edate'].value;
-	var Ehour = document.forms['form']['Ehour'].value;
-	var Emin = document.forms['form']['Emin'].value;
-	var type = document.forms['form']['type'].value;
-	
-		var hr = new XMLHttpRequest();
-		hr.onreadystatechange = function() 
-		{
-			if(hr.readyState == 4 && hr.status == 200) 
-			{		
-				result = hr.responseText;
-				//alert(result);
-				result=JSON.parse(result);
-				
-				document.getElementById("v_contest_name").innerHTML=result['contest_name'];
-				document.getElementById("v_start").innerHTML=result['start'];
-				document.getElementById("v_end").innerHTML=result['end'];
-											
-				if(result["statue"].indexOf('OK')!=-1)
-				{
-					document.forms['form'].submit();
-				}
-			}
-		};
-		var v = "contest_name="+encodeURIComponent(contest_name)+"&"+"date="+date+"&"+"hour="+hour+"&"+"min="+min+"&"+"Edate="+Edate+"&"+"Ehour="+Ehour+"&"+"Emin="+Emin+"&"+"type="+type;
-	
-		hr.open("POST", "../controller/addcontestController.php", true);
-		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		hr.send(v);
-}
-function edit_contest_validation()
-{
-	var contest_name = document.forms['form']['contest_name'].value;
-	var date = document.forms['form']['date'].value;
-	var hour = document.forms['form']['hour'].value;
-	var min = document.forms['form']['min'].value;
-	var Edate = document.forms['form']['Edate'].value;
-	var Ehour = document.forms['form']['Ehour'].value;
-	var Emin = document.forms['form']['Emin'].value;
-	var type = document.forms['form']['type'].value;
-	var	id	 = document.forms['form']['id'].value;
-		var hr = new XMLHttpRequest();
-		hr.onreadystatechange = function() 
-		{
-			if(hr.readyState == 4 && hr.status == 200) 
-			{		
-				result = hr.responseText;
-				//alert(result);
-				result=JSON.parse(result);
-				
-				document.getElementById("v_contest_name").innerHTML=result['contest_name'];
-				document.getElementById("v_start").innerHTML=result['start'];
-				document.getElementById("v_end").innerHTML=result['end'];
-											
-				if(result["statue"].indexOf('OK')!=-1)
-				{
-					document.forms['form'].submit();
-				}
-			}
-		};
-		var v = "contest_name="+encodeURIComponent(contest_name)+"&"+"date="+date+"&"+"hour="+hour+"&"+"min="+min+"&"+"Edate="+Edate+"&"+"Ehour="+Ehour+"&"+"Emin="+Emin+"&"+"type="+type+"&"+"id="+id;
-	
-		hr.open("POST", "../controller/editcontestController.php", true);
-		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-		hr.send(v);
-}
-
-function invite_contest_validation()
-{
-	var name = document.forms['form']['name'].value;
-	var	id	 = document.forms['form']['id'].value;
-		var hr = new XMLHttpRequest();
-		hr.onreadystatechange = function() 
-		{
-			if(hr.readyState == 4 && hr.status == 200) 
-			{		
-				result = hr.responseText;
-				//alert(result);
-				result=JSON.parse(result);
-				
-				document.getElementById("v_name").innerHTML=result['name'];
-											
-				if(result["statue"].indexOf('OK')!=-1)
-				{
-					document.forms['form'].submit();
-				}
-			}
-		};
-		var v = "name="+encodeURIComponent(name)+'&'+"id="+id;
-	
-		hr.open("POST", "../controller/inviteController.php", true);
 		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		hr.send(v);
 }
