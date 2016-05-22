@@ -277,3 +277,31 @@ function edit_contest_validation()
 		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		hr.send(v);
 }
+
+function invite_contest_validation()
+{
+	var name = document.forms['form']['name'].value;
+	var	id	 = document.forms['form']['id'].value;
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				result=JSON.parse(result);
+				
+				document.getElementById("v_name").innerHTML=result['name'];
+											
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "name="+encodeURIComponent(name)+'&'+"id="+id;
+	
+		hr.open("POST", "../controller/inviteController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
