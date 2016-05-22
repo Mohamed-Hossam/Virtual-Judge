@@ -241,3 +241,39 @@ function add_contest_validation()
 		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 		hr.send(v);
 }
+function edit_contest_validation()
+{
+	var contest_name = document.forms['form']['contest_name'].value;
+	var date = document.forms['form']['date'].value;
+	var hour = document.forms['form']['hour'].value;
+	var min = document.forms['form']['min'].value;
+	var Edate = document.forms['form']['Edate'].value;
+	var Ehour = document.forms['form']['Ehour'].value;
+	var Emin = document.forms['form']['Emin'].value;
+	var type = document.forms['form']['type'].value;
+	var	id	 = document.forms['form']['id'].value;
+		var hr = new XMLHttpRequest();
+		hr.onreadystatechange = function() 
+		{
+			if(hr.readyState == 4 && hr.status == 200) 
+			{		
+				result = hr.responseText;
+				//alert(result);
+				result=JSON.parse(result);
+				
+				document.getElementById("v_contest_name").innerHTML=result['contest_name'];
+				document.getElementById("v_start").innerHTML=result['start'];
+				document.getElementById("v_end").innerHTML=result['end'];
+											
+				if(result["statue"].indexOf('OK')!=-1)
+				{
+					document.forms['form'].submit();
+				}
+			}
+		};
+		var v = "contest_name="+encodeURIComponent(contest_name)+"&"+"date="+date+"&"+"hour="+hour+"&"+"min="+min+"&"+"Edate="+Edate+"&"+"Ehour="+Ehour+"&"+"Emin="+Emin+"&"+"type="+type+"&"+"id="+id;
+	
+		hr.open("POST", "../controller/editcontestController.php", true);
+		hr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+		hr.send(v);
+}
